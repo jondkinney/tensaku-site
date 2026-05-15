@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<!--
+  Tensaku landing page.
+  Placeholders to update once the repo is live:
+    - https://github.com/jondkinney/tensaku  (repo URL)
+    - https://github.com/jondkinney/tensaku/releases/latest  (downloads)
+    - https://github.com/jondkinney/tensaku/issues  (issues)
+    - <screenshot> placeholders in the gallery section
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tensaku: Wayland screenshot annotation, with corrections you can move</title>
+  <meta name="description" content="Tensaku (添削) is a Wayland screenshot annotation tool, a fork of satty with scroll capture, movable annotations, a layer panel, and more.">
+  <meta property="og:title" content="Tensaku: Wayland screenshot annotation">
+  <meta property="og:description" content="Mark up screens. Stitch tall captures. Move every annotation.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fbf8f0;
+      --bg-tint: #f4efe2;
+      --paper-line: #e8e1cd;
+      --ink: #1a1612;
+      --ink-soft: #3d3530;
+      --muted: #6a625b;
+      --accent: #c8332b;
+      --accent-deep: #9c2620;
+      --accent-soft: #e89a95;
+      --code-bg: #2a2520;
+      --code-text: #f4efe2;
+      --max-width: 980px;
+      --radius: 4px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      background-image:
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent 31px,
+          var(--paper-line) 31px,
+          var(--paper-line) 32px
+        );
+      background-size: 100% 32px;
+    }
+
+    a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+    a:hover { border-bottom-color: var(--accent); }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    nav {
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--paper-line);
+      background: rgba(251, 248, 240, 0.95);
+      backdrop-filter: blur(6px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav .brand {
+      font-family: "Lora", Georgia, serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    nav .brand .kanji {
+      color: var(--accent);
+      margin-left: 0.4rem;
+      font-family: "Noto Serif JP", serif;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.75rem;
+      margin: 0;
+      padding: 0;
+      font-size: 0.95rem;
+    }
+    nav ul a {
+      color: var(--ink-soft);
+      border: none;
+    }
+    nav ul a:hover {
+      color: var(--accent);
+    }
+
+    .hero {
+      padding: 5rem 0 3.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "添削";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: "Noto Serif JP", serif;
+      font-size: clamp(14rem, 30vw, 22rem);
+      color: var(--accent);
+      opacity: 0.05;
+      font-weight: 700;
+      letter-spacing: 0.5rem;
+      pointer-events: none;
+      z-index: 0;
+      line-height: 1;
+    }
+    .hero > * { position: relative; z-index: 1; }
+
+    .hero h1 {
+      font-family: "Lora", Georgia, serif;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem;
+      color: var(--ink);
+    }
+    .hero h1 .kanji {
+      display: inline-block;
+      margin-left: 1rem;
+      color: var(--accent);
+      font-family: "Noto Serif JP", serif;
+      font-size: 0.65em;
+      vertical-align: 0.15em;
+    }
+    .hero .tagline {
+      font-family: "Lora", Georgia, serif;
+      font-style: italic;
+      font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+      color: var(--ink-soft);
+      margin: 0 0 0.75rem;
+    }
+    .hero .subtagline {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .seal {
+      display: inline-block;
+      width: 1.5rem;
+      height: 1.5rem;
+      background: var(--accent);
+      border-radius: 4px;
+      vertical-align: middle;
+      margin: 0 0.4rem;
+      transform: rotate(-3deg);
+      box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--accent);
+    }
+
+    .cta {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.6rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      font-size: 1rem;
+      transition: transform 0.1s, background 0.15s;
+      border: 1.5px solid transparent;
+    }
+    .btn:hover { transform: translateY(-1px); border-bottom-color: transparent; }
+    .btn.primary {
+      background: var(--accent);
+      color: var(--bg);
+    }
+    .btn.primary:hover { background: var(--accent-deep); }
+    .btn.secondary {
+      background: transparent;
+      color: var(--ink);
+      border-color: var(--ink-soft);
+    }
+    .btn.secondary:hover { background: var(--ink); color: var(--bg); }
+
+    section {
+      padding: 4rem 0;
+      position: relative;
+    }
+    section + section {
+      border-top: 1px solid var(--paper-line);
+    }
+
+    h2 {
+      font-family: "Lora", Georgia, serif;
+      font-size: clamp(1.85rem, 4vw, 2.5rem);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 0 0 0.5rem;
+      color: var(--ink);
+    }
+    h2 .kanji {
+      color: var(--accent);
+      margin-left: 0.5rem;
+      font-family: "Noto Serif JP", serif;
+      font-size: 0.7em;
+    }
+    h3 {
+      font-family: "Lora", Georgia, serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem;
+      color: var(--ink);
+    }
+    .section-intro {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 640px;
+      margin: 0 0 2.5rem;
+    }
+
+    .about p {
+      font-family: "Lora", Georgia, serif;
+      font-size: 1.2rem;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .about .etymology {
+      font-size: 0.95rem;
+      font-style: italic;
+      color: var(--muted);
+      margin-top: 1rem;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem 2.5rem;
+    }
+    .feature {
+      position: relative;
+      padding-left: 1.5rem;
+    }
+    .feature::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      width: 3px;
+      height: 1.5rem;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+    .feature p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+    }
+
+    .feature-grid.compact {
+      gap: 1.25rem 2rem;
+    }
+    .feature-grid.compact .feature p {
+      font-size: 0.9rem;
+    }
+    .feature-grid.compact .feature h3 {
+      font-size: 1.05rem;
+    }
+
+    .featured {
+      background: var(--bg-tint);
+      padding: 1.5rem 1.75rem;
+      border-radius: var(--radius);
+      border-left: 3px solid var(--accent);
+      margin-bottom: 2.5rem;
+    }
+    .featured-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .featured h3 {
+      color: var(--accent-deep);
+    }
+
+    pre, code {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
+    code {
+      background: var(--bg-tint);
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.9em;
+      color: var(--ink);
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 1.25rem 1.5rem;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      margin: 1rem 0;
+    }
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    .install-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .install-card {
+      padding: 1.5rem;
+      background: var(--bg-tint);
+      border-radius: var(--radius);
+      border: 1px solid var(--paper-line);
+    }
+    .install-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    .install-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin: 0 0 0.75rem;
+    }
+
+    .quickstart ol {
+      counter-reset: step;
+      list-style: none;
+      padding: 0;
+    }
+    .quickstart li {
+      counter-increment: step;
+      position: relative;
+      padding-left: 3rem;
+      margin-bottom: 1.5rem;
+    }
+    .quickstart li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 2rem;
+      height: 2rem;
+      background: var(--accent);
+      color: var(--bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-family: "Lora", Georgia, serif;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .screenshot {
+      aspect-ratio: 16 / 10;
+      background: var(--bg-tint);
+      border: 1px dashed var(--paper-line);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+
+    footer {
+      padding: 3rem 0 4rem;
+      border-top: 1px solid var(--paper-line);
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    footer p { margin: 0.4rem 0; }
+    footer .credits {
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--paper-line);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--ink-soft); border-bottom: 1px dotted var(--muted); }
+    footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+    @media (max-width: 600px) {
+      nav ul { gap: 1rem; font-size: 0.85rem; }
+      .hero { padding: 3rem 0 2.5rem; }
+      .hero h1 .kanji { display: block; margin: 0.5rem 0 0; }
+      section { padding: 3rem 0; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="#" class="brand">Tensaku<span class="kanji">添削</span></a>
+    <ul>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#install">Install</a></li>
+      <li><a href="#quickstart">Quick start</a></li>
+      <li><a href="https://github.com/jondkinney/tensaku">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+
+  <section class="hero">
+    <h1>Tensaku<span class="kanji">添削</span></h1>
+    <p class="tagline">Mark up screens. Stitch tall captures. Move every annotation.</p>
+    <p class="subtagline">A Wayland screenshot annotation tool with the precision of a red pen, extended with a layer panel, scroll capture, and movable annotations.</p>
+    <div class="cta">
+      <a href="https://github.com/jondkinney/tensaku/releases/latest" class="btn primary">Download for Linux</a>
+      <a href="https://github.com/jondkinney/tensaku" class="btn secondary">View on GitHub</a>
+    </div>
+  </section>
+
+  <section class="about">
+    <p>
+      Tensaku builds on <a href="https://github.com/gabm/satty">satty</a> (Matthias Gabriel's elegant Wayland screenshot annotator), keeping its fast, focused workflow while adding movable annotations, scroll capture for tall content, and a layer panel.
+    </p>
+    <p class="etymology">添削 (<em>tensaku</em>) is Japanese for "proofreading correction," the marks a teacher leaves on a student's paper.</p>
+  </section>
+
+  <section id="features">
+    <h2>What's new in Tensaku<span class="kanji">新</span></h2>
+    <p class="section-intro">The headline differences from upstream satty.</p>
+
+    <div class="featured">
+      <div class="featured-row">
+        <div class="feature">
+          <h3>Scroll Capture</h3>
+          <p>Capture content beyond the visible viewport. Tensaku auto-scrolls the underlying app via virtual-keyboard PgDn presses, captures each frame through a wlr-screencopy overlay, and stitches the results into a single tall screenshot using a multi-band SAD aligner.</p>
+        </div>
+        <div class="feature">
+          <h3>Movable Annotations</h3>
+          <p>Select, multi-select, drag, and resize annotations after they're drawn. No more "draw it perfectly the first time": every shape, line, and marker stays editable.</p>
+        </div>
+        <div class="feature">
+          <h3>Layer Panel</h3>
+          <p>A full layer-stack UI: reorder, lock, hide, rename, drag-and-drop. Selection halos and panel rows mirror each other. <code>Ctrl+L</code> toggles the panel.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-grid compact">
+      <div class="feature">
+        <h3>Paste images as layers</h3>
+        <p><code>Ctrl+V</code> drops a clipboard image into the canvas as a resizable, movable layer.</p>
+      </div>
+      <div class="feature">
+        <h3>Zoom controls</h3>
+        <p>Zoom indicator dropdown, <code>Ctrl+digit</code> shortcuts, <code>Super+scroll</code> to zoom, all DPR-aware.</p>
+      </div>
+      <div class="feature">
+        <h3>Custom popovers</h3>
+        <p>GTK4 tooltips replaced with rich popovers showing live state for arrow style, blur style, highlighter mode, and more.</p>
+      </div>
+      <div class="feature">
+        <h3>10-color standard palette</h3>
+        <p>A vetted default palette in a vertical 2-column picker, plus a system color dialog for everything else.</p>
+      </div>
+      <div class="feature">
+        <h3>DPR-aware halos &amp; handles</h3>
+        <p>Selection chrome looks crisp at any display scale; corner / edge handles use display-pixel sizing.</p>
+      </div>
+      <div class="feature">
+        <h3>Arrow style picker</h3>
+        <p>Standard, Pointy, Curved, and Double arrow geometries for pointing more expressively.</p>
+      </div>
+      <div class="feature">
+        <h3>Highlighter modes</h3>
+        <p>Freeform highlighting <em>or</em> a Text-Locked mode that snaps to detected text rows.</p>
+      </div>
+      <div class="feature">
+        <h3>Aspect-ratio crop</h3>
+        <p>Constrain crops to common ratios (16:9, 4:3, 1:1, …) with auto-snapping when you switch ratios.</p>
+      </div>
+      <div class="feature">
+        <h3>Spotlight tool</h3>
+        <p>Dim the screenshot around a spotlight region. Existing annotations stay bright on top, so callouts don't get washed out.</p>
+      </div>
+      <div class="feature">
+        <h3>Welcome &amp; Preferences dialogs</h3>
+        <p>First-launch onboarding plus a GUI for the configuration that previously required editing <code>config.toml</code>.</p>
+      </div>
+      <div class="feature">
+        <h3>Toolbar polish</h3>
+        <p>Responsive wrap layout, <code>Ctrl+T</code> to toggle all UI chrome, popover-dismiss handling, and inline help.</p>
+      </div>
+      <div class="feature">
+        <h3>Multi-style blur picker</h3>
+        <p>Pixelate, Secure Blur, Gaussian, and Black Out. Choose the right redaction per region from an icon-menu, with irreversible variants for sensitive content.</p>
+      </div>
+      <div class="feature">
+        <h3>Smoother brush strokes</h3>
+        <p>Per-annotation smoothness with an RDP-then-Chaikin pipeline: clean curves from imprecise input, dialed in per stroke instead of one global setting.</p>
+      </div>
+      <div class="feature">
+        <h3>Crop transforms &amp; dimensions</h3>
+        <p>Rotate 90°, flip horizontal, direct width/height entry with a ↔ swap, background matte picker, and <code>Ctrl+wheel</code> to resize proportionally from center.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>From satty<span class="kanji">基</span></h2>
+    <p class="section-intro">The foundation Tensaku is built on: every original satty feature still works.</p>
+
+    <div class="feature-grid compact">
+      <div class="feature">
+        <h3>Annotation tools</h3>
+        <p>Arrow, rectangle, ellipse, line, brush, text, blur, highlight, crop, all with size, color, and style controls.</p>
+      </div>
+      <div class="feature">
+        <h3>Save or copy</h3>
+        <p>Write a PNG / JPEG / WebP to disk or copy directly to the Wayland clipboard. Pipe to <code>-</code> for stdout.</p>
+      </div>
+      <div class="feature">
+        <h3>Configurable keybindings</h3>
+        <p>Every shortcut is rebindable via <code>~/.config/tensaku/config.toml</code>, including chord-style bindings.</p>
+      </div>
+      <div class="feature">
+        <h3>Sway / Hyprland friendly</h3>
+        <p>Window-decoration hints, no-decoration mode, and clean integration with tiling compositors.</p>
+      </div>
+      <div class="feature">
+        <h3>Custom CSS theming</h3>
+        <p>Style the toolbar, popovers, and dialogs via a user CSS file. Minimum-size and chrome options exposed.</p>
+      </div>
+      <div class="feature">
+        <h3>Undo / redo</h3>
+        <p>Full undo stack across drawing, moving, deleting, and cropping. <code>Ctrl+Z</code> / <code>Ctrl+Shift+Z</code>.</p>
+      </div>
+      <div class="feature">
+        <h3>Triggers &amp; actions</h3>
+        <p>Map keys to specific actions (save-and-copy, save-and-exit, etc.). Configurable enter/escape behavior.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2>Install<span class="kanji">入</span></h2>
+    <p class="section-intro">Tensaku runs on Wayland compositors that implement <code>wlr-layer-shell</code> and <code>wlr-screencopy</code> (Sway, Hyprland, river, Wayfire, etc.).</p>
+
+    <div class="install-grid">
+      <div class="install-card">
+        <h3>Pre-built binaries</h3>
+        <p>Download the latest release from GitHub (tarball for x86_64 Linux).</p>
+        <a href="https://github.com/jondkinney/tensaku/releases/latest" class="btn primary">Releases</a>
+      </div>
+      <div class="install-card">
+        <h3>Build from source</h3>
+        <p>Requires Rust 1.75+ and GTK4 development headers.</p>
+        <pre><code>git clone https://github.com/jondkinney/tensaku.git
+cd tensaku
+cargo install --path .</code></pre>
+      </div>
+      <div class="install-card">
+        <h3>From an upstream satty install</h3>
+        <p>Tensaku reads its own config at <code>~/.config/tensaku/</code> and is safe to install alongside satty. Both binaries can coexist.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="quickstart" class="quickstart">
+    <h2>Quick start<span class="kanji">始</span></h2>
+    <p class="section-intro">Pipe a screenshot into Tensaku from any Wayland screenshot tool.</p>
+
+    <ol>
+      <li>
+        <h3>Capture a region with <code>grim</code> + <code>slurp</code></h3>
+        <pre><code>grim -g "$(slurp)" - | tensaku --filename -</code></pre>
+      </li>
+      <li>
+        <h3>Capture the whole screen</h3>
+        <pre><code>grim - | tensaku --filename -</code></pre>
+      </li>
+      <li>
+        <h3>Annotate, then copy to clipboard</h3>
+        <p>Press <code>Ctrl+C</code> to copy the result, or <code>Ctrl+S</code> to save.</p>
+      </li>
+      <li>
+        <h3>Stitch a tall capture</h3>
+        <p>Click the <strong>Auto-Scroll</strong> button inside the selection to start a scrolling capture. Tensaku drives the underlying app and stitches the frames automatically.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Screenshots<span class="kanji">画</span></h2>
+    <p class="section-intro">Annotation, scroll capture, and the layer panel in action.</p>
+
+    <div class="gallery">
+      <div class="screenshot">screenshot: main canvas with annotations</div>
+      <div class="screenshot">screenshot: layer panel open</div>
+      <div class="screenshot">screenshot: scroll-capture in progress</div>
+      <div class="screenshot">screenshot: preferences dialog</div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container">
+    <p>
+      Released under the <a href="https://www.mozilla.org/en-US/MPL/2.0/">Mozilla Public License 2.0</a>.
+    </p>
+    <p>
+      <a href="https://github.com/jondkinney/tensaku">Source</a> ·
+      <a href="https://github.com/jondkinney/tensaku/issues">Issues</a> ·
+      <a href="https://github.com/jondkinney/tensaku/releases">Releases</a>
+    </p>
+    <p class="credits">
+      Original satty © Matthias Gabriel. Tensaku fork © Jon Kinney.<br>
+      Tensaku stands on satty's shoulders. Full credit to gabm and the satty contributors for the foundation.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
