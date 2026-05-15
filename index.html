@@ -457,7 +457,7 @@
 
   <section class="about">
     <p>
-      Tensaku builds on <a href="https://github.com/gabm/satty">satty</a> (Matthias Gabriel's elegant Wayland screenshot annotator), keeping its fast, focused workflow while adding movable annotations, scroll capture for tall content, and a layer panel.
+      Tensaku builds on <a href="https://github.com/gabm/satty">satty</a> (Matthias Gabriel's elegant Wayland screenshot annotator), keeping its fast, focused workflow while adding movable annotations, scroll capture, and a layer panel.
     </p>
     <p class="etymology">添削 (<em>tensaku</em>) is Japanese for "proofreading correction," the marks a teacher leaves on a student's paper.</p>
   </section>
@@ -470,7 +470,7 @@
       <div class="featured-row">
         <div class="feature">
           <h3>Scroll Capture</h3>
-          <p>Capture content beyond the visible viewport. Tensaku auto-scrolls the underlying app via virtual-keyboard PgDn presses, captures each frame through a wlr-screencopy overlay, and stitches the results into a single tall screenshot using a multi-band SAD aligner.</p>
+          <p>Capture content beyond the visible viewport, vertically or horizontally. Tensaku auto-scrolls the underlying app with virtual-keyboard arrow-key presses, captures each frame through a wlr-screencopy overlay, and stitches the results into one seamless screenshot with a fast grayscale multi-band SAD aligner.</p>
         </div>
         <div class="feature">
           <h3>Movable Annotations</h3>
@@ -490,7 +490,7 @@
       </div>
       <div class="feature">
         <h3>Zoom controls</h3>
-        <p>Zoom indicator dropdown, <code>Ctrl+digit</code> shortcuts, <code>Super+scroll</code> to zoom, all DPR-aware.</p>
+        <p>Zoom indicator dropdown, <code>Ctrl+digit</code> shortcuts, and <code>Ctrl+scroll</code> to zoom, all DPR-aware — and it leaves your compositor's <code>Super</code> bindings untouched.</p>
       </div>
       <div class="feature">
         <h3>Custom popovers</h3>
@@ -621,8 +621,8 @@ cargo install --path .</code></pre>
         <p>Press <code>Ctrl+C</code> to copy the result, or <code>Ctrl+S</code> to save.</p>
       </li>
       <li>
-        <h3>Stitch a tall capture</h3>
-        <p>Click the <strong>Auto-Scroll</strong> button inside the selection to start a scrolling capture. Tensaku drives the underlying app and stitches the frames automatically.</p>
+        <h3>Stitch a scrolling capture</h3>
+        <p>Drag a region, then click the <strong>&#9660;</strong> (vertical) or <strong>&#9654;</strong> (horizontal) Auto-Scroll button inside the selection. Tensaku drives the underlying app and stitches the frames automatically.</p>
       </li>
     </ol>
   </section>
