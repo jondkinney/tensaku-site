@@ -184,6 +184,15 @@
       justify-content: center;
       flex-wrap: wrap;
     }
+    .hero-demo {
+      max-width: 860px;
+      margin: 3rem auto 0;
+    }
+    .hero-demo img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
     .btn {
       display: inline-flex;
       align-items: center;
@@ -241,6 +250,9 @@
       margin: 0 0 2.5rem;
     }
 
+    .about {
+      padding-top: 0.5rem;
+    }
     .about p {
       font-family: "Lora", Georgia, serif;
       font-size: 1.2rem;
@@ -488,7 +500,17 @@
     footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
     @media (max-width: 600px) {
-      nav ul { gap: 1rem; font-size: 0.85rem; }
+      nav { padding: 0.9rem 0; }
+      nav .container { flex-direction: column; gap: 0.85rem; }
+      nav .brand { white-space: nowrap; }
+      nav ul {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.6rem 1.4rem;
+        font-size: 0.95rem;
+      }
+      nav ul a { white-space: nowrap; }
       .hero { padding: 3rem 0 2.5rem; }
       .hero h1 .kanji { display: block; margin: 0.5rem 0 0; }
       section { padding: 3rem 0; }
@@ -518,6 +540,9 @@
     <div class="cta">
       <a href="https://github.com/jondkinney/tensaku/releases/latest" class="btn primary">Download for Linux</a>
       <a href="https://github.com/jondkinney/tensaku" class="btn secondary">View on GitHub</a>
+    </div>
+    <div class="hero-demo">
+      <img src="assets/hero-demo.webp" alt="Tensaku marking up a screenshot: a red ellipse circles a misaligned button and a red box flags low-contrast text, with annotation labels">
     </div>
   </section>
 
