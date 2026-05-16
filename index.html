@@ -211,9 +211,6 @@
       padding: 4rem 0;
       position: relative;
     }
-    section + section {
-      border-top: 1px solid var(--paper-line);
-    }
 
     h2 {
       font-family: "Lora", Georgia, serif;
@@ -325,7 +322,8 @@
       color: var(--code-text);
       padding: 1.25rem 1.5rem;
       border-radius: var(--radius);
-      overflow-x: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
       font-size: 0.9rem;
       line-height: 1.55;
       margin: 1rem 0;
@@ -338,23 +336,76 @@
 
     .install-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 1.5rem;
+      margin-top: 1.5rem;
     }
-    .install-card {
+    .install-card,
+    .install-source,
+    .install-featured {
       padding: 1.5rem;
       background: var(--bg-tint);
       border-radius: var(--radius);
       border: 1px solid var(--paper-line);
     }
-    .install-card h3 {
+    .install-featured {
+      border-color: var(--accent-soft);
+    }
+    .install-source {
+      margin-top: 1.5rem;
+    }
+    .install-card {
+      display: flex;
+      flex-direction: column;
+    }
+    .install-card .btn {
+      align-self: flex-start;
+    }
+    .install-card > :last-child {
+      margin-top: auto;
+      margin-bottom: 0;
+    }
+    .install-card h3,
+    .install-source h3 {
       font-size: 1.1rem;
       margin-bottom: 0.5rem;
     }
-    .install-card p {
+    .install-featured-head {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .install-featured-head h3 {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+    .install-card p,
+    .install-source p,
+    .install-featured p {
       font-size: 0.9rem;
       color: var(--muted);
       margin: 0 0 0.75rem;
+    }
+    .install-featured pre,
+    .install-source pre {
+      margin: 0.75rem 0 0;
+    }
+    .install-badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--accent);
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .install-note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 1.5rem;
     }
 
     .quickstart ol {
@@ -387,21 +438,35 @@
 
     .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
       margin-top: 1.5rem;
     }
     .screenshot {
-      aspect-ratio: 16 / 10;
-      background: var(--bg-tint);
-      border: 1px dashed var(--paper-line);
-      border-radius: var(--radius);
+      margin: 0;
+    }
+    .screenshot-frame {
+      aspect-ratio: 4 / 3;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    .screenshot-frame img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+    }
+    .screenshot figcaption {
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
       color: var(--muted);
-      font-size: 0.85rem;
-      font-style: italic;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .screenshot figcaption strong {
+      color: var(--ink-soft);
+      font-weight: 600;
     }
 
     footer {
@@ -583,24 +648,37 @@
     <h2>Install<span class="kanji">入</span></h2>
     <p class="section-intro">Tensaku runs on Wayland compositors that implement <code>wlr-layer-shell</code> and <code>wlr-screencopy</code> (Sway, Hyprland, river, Wayfire, etc.).</p>
 
+    <div class="install-featured">
+      <div class="install-featured-head">
+        <h3>Arch Linux</h3>
+        <span class="install-badge">AUR &middot; Recommended</span>
+      </div>
+      <p>Install straight from the AUR &mdash; the package tracks every release. Works with <code>paru</code> or any other AUR helper.</p>
+      <pre><code>yay -S tensaku</code></pre>
+    </div>
+
     <div class="install-grid">
       <div class="install-card">
-        <h3>Pre-built binaries</h3>
-        <p>Download the latest release from GitHub (tarball for x86_64 Linux).</p>
+        <h3>Pre-built binary</h3>
+        <p>Grab the latest release tarball &mdash; x86_64 Linux, no toolchain required.</p>
         <a href="https://github.com/jondkinney/tensaku/releases/latest" class="btn primary">Releases</a>
       </div>
       <div class="install-card">
-        <h3>Build from source</h3>
-        <p>Requires Rust 1.75+ and GTK4 development headers.</p>
-        <pre><code>git clone https://github.com/jondkinney/tensaku.git
-cd tensaku
-cargo install --path .</code></pre>
-      </div>
-      <div class="install-card">
-        <h3>From an upstream satty install</h3>
-        <p>Tensaku reads its own config at <code>~/.config/tensaku/</code> and is safe to install alongside satty. Both binaries can coexist.</p>
+        <h3>cargo</h3>
+        <p>One command on any distro that already has a Rust toolchain.</p>
+        <pre><code>cargo install tensaku</code></pre>
       </div>
     </div>
+
+    <div class="install-source">
+      <h3>Build from source</h3>
+      <p>Requires Rust 1.75+ and GTK4 development headers.</p>
+      <pre><code>git clone https://github.com/jondkinney/tensaku
+cd tensaku
+cargo install --path .</code></pre>
+    </div>
+
+    <p class="install-note">Already running satty? Tensaku reads its own config at <code>~/.config/tensaku/</code> and installs safely alongside &mdash; both binaries coexist.</p>
   </section>
 
   <section id="quickstart" class="quickstart">
@@ -632,10 +710,22 @@ cargo install --path .</code></pre>
     <p class="section-intro">Annotation, scroll capture, and the layer panel in action.</p>
 
     <div class="gallery">
-      <div class="screenshot">screenshot: main canvas with annotations</div>
-      <div class="screenshot">screenshot: layer panel open</div>
-      <div class="screenshot">screenshot: scroll-capture in progress</div>
-      <div class="screenshot">screenshot: preferences dialog</div>
+      <figure class="screenshot">
+        <div class="screenshot-frame"><img src="assets/screenshot-main-canvas.png" loading="lazy" alt="Tensaku's annotation canvas marking up a UI review with a red arrow, text labels, a rectangle, a blur, and a numbered marker"></div>
+        <figcaption><strong>Main canvas</strong> &mdash; movable annotations on a screenshot</figcaption>
+      </figure>
+      <figure class="screenshot">
+        <div class="screenshot-frame"><img src="assets/screenshot-scroll-capture.png" loading="lazy" alt="Tensaku showing a tall stitched screenshot produced by scroll capture"></div>
+        <figcaption><strong>Scroll capture</strong> &mdash; content beyond the viewport, stitched</figcaption>
+      </figure>
+      <figure class="screenshot">
+        <div class="screenshot-frame"><img src="assets/screenshot-layer-panel.png" loading="lazy" alt="Tensaku's layer panel open, listing each annotation as a named, reorderable layer"></div>
+        <figcaption><strong>Layer panel</strong> &mdash; every annotation as a reorderable layer</figcaption>
+      </figure>
+      <figure class="screenshot">
+        <div class="screenshot-frame"><img src="assets/screenshot-preferences.png" loading="lazy" alt="Tensaku's preferences dialog open as a modal over the app, showing keyboard-shortcut bindings and behavior settings"></div>
+        <figcaption><strong>Preferences</strong> &mdash; rebindable shortcuts and behavior settings</figcaption>
+      </figure>
     </div>
   </section>
 
