@@ -455,6 +455,40 @@
       font-weight: 600;
       font-family: "Lora", Georgia, serif;
     }
+    .qs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 0.75rem;
+    }
+    .qs-card {
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-tint);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius);
+    }
+    .qs-card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+    }
+    .qs-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .qs-card pre { margin: 0.75rem 0; }
+    .qs-card > :last-child { margin-bottom: 0; }
+    .qs-scroll {
+      margin-top: 1.75rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-tint);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+    }
+    .qs-scroll h3 {
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+    }
+    .qs-scroll p { margin: 0; }
 
     .gallery {
       display: grid;
@@ -719,31 +753,34 @@ cargo install --path .</code></pre>
 
   <section id="quickstart" class="quickstart">
     <h2>Quick start<span class="kanji">始</span></h2>
-    <p class="section-intro">On Omarchy it's wired up already; anywhere else, pipe a screenshot in from any Wayland screenshot tool.</p>
+    <p class="section-intro">Two steps: get a screenshot into Tensaku, then annotate it.</p>
 
     <ol>
       <li>
-        <h3>On Omarchy</h3>
-        <p>Point <code>OMARCHY_SCREENSHOT_EDITOR</code> at a small Tensaku wrapper &mdash; your existing screenshot keys then feed every capture straight in, window highlighting and all. The <a href="https://github.com/jondkinney/tensaku#omarchy">README</a> has the wrapper.</p>
+        <h3>Get a screenshot into Tensaku</h3>
+        <div class="qs-grid">
+          <div class="qs-card">
+            <h3>On Omarchy</h3>
+            <p>Point <code>OMARCHY_SCREENSHOT_EDITOR</code> at a small Tensaku wrapper &mdash; your screenshot keys then open every capture straight in, window highlighting and all. The <a href="https://github.com/jondkinney/tensaku#omarchy">README</a> has the wrapper.</p>
+          </div>
+          <div class="qs-card">
+            <h3>Other Wayland compositors</h3>
+            <p><code>slurp</code> is a region picker &mdash; <strong>drag a box</strong>; a plain click cancels it.</p>
+            <pre><code>grim -g "$(slurp)" - | tensaku --filename -</code></pre>
+            <p>Or grab the whole screen: <code>grim - | tensaku --filename -</code></p>
+          </div>
+        </div>
       </li>
       <li>
-        <h3>Capture a region with <code>grim</code> + <code>slurp</code></h3>
-        <pre><code>grim -g "$(slurp)" - | tensaku --filename -</code></pre>
-        <p><code>slurp</code> is a region picker &mdash; <strong>drag a box</strong> to select; a plain click cancels it.</p>
-      </li>
-      <li>
-        <h3>Capture the whole screen</h3>
-        <pre><code>grim - | tensaku --filename -</code></pre>
-      </li>
-      <li>
-        <h3>Annotate, then copy to clipboard</h3>
-        <p>Press <code>Ctrl+C</code> to copy the result, or <code>Ctrl+S</code> to save.</p>
-      </li>
-      <li>
-        <h3>Stitch a scrolling capture</h3>
-        <p>Drag a region, then click the <strong>&#9660;</strong> (vertical) or <strong class="arrow-h">&#9660;</strong> (horizontal) Auto-Scroll button inside the selection. Tensaku drives the underlying app and stitches the frames automatically.</p>
+        <h3>Annotate &amp; save</h3>
+        <p>Pick a tool, mark up the screenshot, then <code>Ctrl+C</code> to copy the result or <code>Ctrl+S</code> to save.</p>
       </li>
     </ol>
+
+    <div class="qs-scroll">
+      <h3>Scrolling capture &mdash; a separate mode</h3>
+      <p>To capture content taller than the screen, launch the dedicated mode with <code>tensaku --scroll-capture</code> (or bind it to a key &mdash; see the <a href="https://github.com/jondkinney/tensaku#omarchy">README</a>). Drag a region in the overlay, then click the <strong>&#9660;</strong> (vertical) or <strong class="arrow-h">&#9660;</strong> (horizontal) Auto-Scroll button. Tensaku scrolls the underlying app, stitches the frames, and opens the result to annotate.</p>
+    </div>
   </section>
 
   <section>
