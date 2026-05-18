@@ -719,12 +719,17 @@ cargo install --path .</code></pre>
 
   <section id="quickstart" class="quickstart">
     <h2>Quick start<span class="kanji">始</span></h2>
-    <p class="section-intro">Pipe a screenshot into Tensaku from any Wayland screenshot tool.</p>
+    <p class="section-intro">On Omarchy it's wired up already; anywhere else, pipe a screenshot in from any Wayland screenshot tool.</p>
 
     <ol>
       <li>
+        <h3>On Omarchy</h3>
+        <p>Point <code>OMARCHY_SCREENSHOT_EDITOR</code> at a small Tensaku wrapper &mdash; your existing screenshot keys then feed every capture straight in, window highlighting and all. The <a href="https://github.com/jondkinney/tensaku#omarchy">README</a> has the wrapper.</p>
+      </li>
+      <li>
         <h3>Capture a region with <code>grim</code> + <code>slurp</code></h3>
         <pre><code>grim -g "$(slurp)" - | tensaku --filename -</code></pre>
+        <p><code>slurp</code> is a region picker &mdash; <strong>drag a box</strong> to select; a plain click cancels it.</p>
       </li>
       <li>
         <h3>Capture the whole screen</h3>
