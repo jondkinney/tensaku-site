@@ -735,8 +735,9 @@
       </div>
       <div class="install-card">
         <h3>cargo</h3>
-        <p>One command &mdash; needs a Rust toolchain and the GTK4/Adwaita dev headers (it builds from source).</p>
-        <pre><code>cargo install tensaku</code></pre>
+        <p>Builds from source &mdash; needs a Rust toolchain and the GTK4/Adwaita dev headers. The second line registers the icon &amp; desktop entry (<code>cargo install</code> is binary-only).</p>
+        <pre><code>cargo install tensaku
+tensaku --install-desktop</code></pre>
       </div>
     </div>
 
