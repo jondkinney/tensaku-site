@@ -349,6 +349,10 @@
       padding: 0;
       color: inherit;
     }
+    .arrow-h {
+      display: inline-block;
+      transform: rotate(-90deg);
+    }
 
     .install-grid {
       display: grid;
@@ -697,7 +701,7 @@
       </div>
       <div class="install-card">
         <h3>cargo</h3>
-        <p>One command on any distro that already has a Rust toolchain.</p>
+        <p>One command &mdash; needs a Rust toolchain and the GTK4/Adwaita dev headers (it builds from source).</p>
         <pre><code>cargo install tensaku</code></pre>
       </div>
     </div>
@@ -732,7 +736,7 @@ cargo install --path .</code></pre>
       </li>
       <li>
         <h3>Stitch a scrolling capture</h3>
-        <p>Drag a region, then click the <strong>&#9660;</strong> (vertical) or <strong>&#9654;</strong> (horizontal) Auto-Scroll button inside the selection. Tensaku drives the underlying app and stitches the frames automatically.</p>
+        <p>Drag a region, then click the <strong>&#9660;</strong> (vertical) or <strong class="arrow-h">&#9660;</strong> (horizontal) Auto-Scroll button inside the selection. Tensaku drives the underlying app and stitches the frames automatically.</p>
       </li>
     </ol>
   </section>
