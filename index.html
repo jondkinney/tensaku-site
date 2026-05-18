@@ -16,12 +16,27 @@
   <meta property="og:title" content="Tensaku: Wayland screenshot annotation">
   <meta property="og:description" content="Mark up screens. Stitch tall captures. Move every annotation.">
   <meta property="og:type" content="website">
+  <meta name="theme-color" content="#fbf8f0">
   <link rel="icon" type="image/svg+xml" href="assets/tensaku.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <script>
+    // Apply the saved (or OS-preferred) theme before first paint to avoid a flash.
+    (function () {
+      var theme = 'light';
+      try {
+        var stored = localStorage.getItem('tensaku-theme');
+        theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (e) {}
+      document.documentElement.setAttribute('data-theme', theme);
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'dark' ? '#16130f' : '#fbf8f0');
+    })();
+  </script>
   <style>
     :root {
+      color-scheme: light;
       --bg: #fbf8f0;
       --bg-tint: #f4efe2;
       --paper-line: #e8e1cd;
@@ -33,8 +48,26 @@
       --accent-soft: #e89a95;
       --code-bg: #2a2520;
       --code-text: #f4efe2;
+      --nav-bg: rgba(251, 248, 240, 0.95);
       --max-width: 980px;
       --radius: 4px;
+    }
+
+    /* Dark mode: the cream "paper" goes to warm near-black, the red pen stays. */
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #16130f;
+      --bg-tint: #211c16;
+      --paper-line: #2f2820;
+      --ink: #f3eee2;
+      --ink-soft: #cdc4b3;
+      --muted: #968d7d;
+      --accent: #ef5a4f;
+      --accent-deep: #ff6f63;
+      --accent-soft: #6f352f;
+      --code-bg: #0d0b08;
+      --code-text: #f3eee2;
+      --nav-bg: rgba(22, 19, 15, 0.92);
     }
 
     * { box-sizing: border-box; }
@@ -60,6 +93,21 @@
           var(--paper-line) 32px
         );
       background-size: 100% 32px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Ease the swap between light and dark. */
+    nav,
+    .featured,
+    .install-card,
+    .install-source,
+    .install-featured,
+    .qs-card,
+    .qs-scroll,
+    pre,
+    code,
+    footer {
+      transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
     }
 
     a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
@@ -74,7 +122,7 @@
     nav {
       padding: 1.25rem 0;
       border-bottom: 1px solid var(--paper-line);
-      background: rgba(251, 248, 240, 0.95);
+      background: var(--nav-bg);
       backdrop-filter: blur(6px);
       position: sticky;
       top: 0;
@@ -84,6 +132,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 1rem;
     }
     nav .brand {
       font-family: "Lora", Georgia, serif;
@@ -111,6 +160,75 @@
     }
     nav ul a:hover {
       color: var(--accent);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
+      border-radius: 50%;
+      border: 1.5px solid var(--paper-line);
+      background: transparent;
+      color: var(--ink-soft);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+    }
+    .theme-toggle:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .theme-toggle svg { display: block; }
+    .theme-toggle .icon-sun { display: none; }
+    :root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+    :root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+    .nav-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--paper-line);
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+    }
+    .nav-github:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--bg-tint);
+    }
+    .nav-github svg { display: block; }
+    .nav-download {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--accent);
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background-color 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .nav-download:hover {
+      background: var(--accent-deep);
+      border-color: var(--accent-deep);
+      transform: translateY(-1px);
+    }
+    .theme-toggle:focus-visible,
+    .nav-github:focus-visible,
+    .nav-download:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
     }
 
     .hero {
@@ -204,7 +322,7 @@
       border-radius: var(--radius);
       font-weight: 500;
       font-size: 1rem;
-      transition: transform 0.1s, background 0.15s;
+      transition: transform 0.1s, background-color 0.15s, border-color 0.15s, color 0.15s;
       border: 1.5px solid transparent;
     }
     .btn:hover { transform: translateY(-1px); border-bottom-color: transparent; }
@@ -542,9 +660,10 @@
 
     @media (max-width: 600px) {
       nav { padding: 0.9rem 0; }
-      nav .container { flex-direction: column; gap: 0.85rem; }
+      nav .container { flex-wrap: wrap; gap: 0.85rem 1rem; }
       nav .brand { white-space: nowrap; }
       nav ul {
+        order: 3;
         width: 100%;
         flex-wrap: wrap;
         justify-content: center;
@@ -568,6 +687,17 @@
       <li><a href="#quickstart">Quick start</a></li>
       <li><a href="https://github.com/jondkinney/tensaku">GitHub</a></li>
     </ul>
+    <div class="nav-actions">
+      <button type="button" class="theme-toggle" aria-label="Switch to dark theme" aria-pressed="false">
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </button>
+      <a href="https://github.com/jondkinney/tensaku" class="nav-github">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+      <a href="https://github.com/jondkinney/tensaku/releases/latest" class="nav-download">Download</a>
+    </div>
   </div>
 </nav>
 
@@ -579,7 +709,10 @@
     <p class="subtagline">A Wayland screenshot annotation tool with <span class="nowrap">the precision of a red pen.</span></p>
     <div class="cta">
       <a href="https://github.com/jondkinney/tensaku/releases/latest" class="btn primary">Download for Linux</a>
-      <a href="https://github.com/jondkinney/tensaku" class="btn secondary">View on GitHub</a>
+      <a href="https://github.com/jondkinney/tensaku" class="btn secondary">
+        <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Star on GitHub
+      </a>
     </div>
     <div class="hero-demo">
       <img src="assets/hero-demo.webp" alt="Tensaku marking up a screenshot: a red ellipse circles a misaligned button and a red box flags low-contrast text, with annotation labels">
@@ -826,6 +959,29 @@ cargo install --path .</code></pre>
     </p>
   </div>
 </footer>
+
+<script>
+  // Theme toggle: flip data-theme, remember the choice, keep the button labelled.
+  (function () {
+    var root = document.documentElement;
+    var toggle = document.querySelector('.theme-toggle');
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (!toggle) return;
+    function sync() {
+      var dark = root.getAttribute('data-theme') === 'dark';
+      toggle.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+      toggle.setAttribute('aria-pressed', String(dark));
+      if (meta) meta.setAttribute('content', dark ? '#16130f' : '#fbf8f0');
+    }
+    sync();
+    toggle.addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('tensaku-theme', next); } catch (e) {}
+      sync();
+    });
+  })();
+</script>
 
 </body>
 </html>
